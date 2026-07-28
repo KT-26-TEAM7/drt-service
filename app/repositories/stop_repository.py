@@ -3,12 +3,7 @@ from pathlib import Path
 
 from app.schemas.stop import DRTStop
 
-
-DEFAULT_STOP_CSV_PATH = (
-    Path(__file__).resolve().parents[1]
-    / "data"
-    / "drt_stops.csv"
-)
+DEFAULT_STOP_CSV_PATH = Path(__file__).resolve().parents[1] / "data" / "drt_stops.csv"
 
 
 class StopRepositoryError(RuntimeError):
@@ -22,8 +17,7 @@ class CsvStopRepository:
     def get_all(self) -> list[DRTStop]:
         if not self.file_path.exists():
             raise StopRepositoryError(
-                f"정류장 CSV 파일을 찾을 수 없습니다: "
-                f"{self.file_path}"
+                f"정류장 CSV 파일을 찾을 수 없습니다: {self.file_path}"
             )
 
         stops: list[DRTStop] = []
@@ -41,8 +35,8 @@ class CsvStopRepository:
                         stop = DRTStop(
                             id=int(row["id"]),
                             name=row["name"].strip(),
-                            type=row["type"].strip(),
-                            ext_id=(row["ext_id"].strip() or None),
+                            stop_type=row["type"].strip(),
+                            ext_id=row["ext_id"].strip() or None,
                             latitude=float(row["latitude"]),
                             longitude=float(row["longitude"]),
                         )

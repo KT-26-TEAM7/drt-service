@@ -3,9 +3,11 @@ from fastapi import APIRouter, HTTPException, status
 from app.clients.tmap import TMapAPIError
 from app.repositories.stop_repository import StopRepositoryError
 from app.schemas.stop import DropoffStopSelectionRequest, DropoffStopSelectionResponse
-from app.services.select_dropoff_stop import DropoffStopSelectionError, find_optimal_dropoff_stop
 from app.services.route_walking import WalkingRouteError
-
+from app.services.select_dropoff_stop import (
+    DropoffStopSelectionError,
+    find_optimal_dropoff_stop,
+)
 
 router = APIRouter(
     prefix="/api/dropoff-stops",
@@ -17,7 +19,9 @@ router = APIRouter(
     "/select",
     response_model=DropoffStopSelectionResponse,
 )
-async def select_dropoff_stop_api(request: DropoffStopSelectionRequest) -> DropoffStopSelectionResponse:
+async def select_dropoff_stop_api(
+    request: DropoffStopSelectionRequest,
+) -> DropoffStopSelectionResponse:
     try:
         return await find_optimal_dropoff_stop(
             destination=request.destination,

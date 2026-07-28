@@ -7,18 +7,17 @@ from app.schemas.destination import (
     DestinationSearchType,
 )
 
+
 class DestinationConfirmationError(ValueError):
     """목적지 확인 요청 처리 중 발생한 오류."""
+
 
 def _build_destination_description(destination: DestinationCandidate) -> str:
     location = destination.neighborhood or destination.district
     category = destination.category or destination.detail_category
 
     if location and category:
-        return (
-            f"{location}에 위치한 "
-            f"{category} {destination.name}"
-        )
+        return f"{location}에 위치한 {category} {destination.name}"
 
     if location:
         return f"{location}에 위치한 {destination.name}"
@@ -29,14 +28,18 @@ def _build_destination_description(destination: DestinationCandidate) -> str:
     return destination.name
 
 
-def build_destination_confirmation(destinations: list[DestinationCandidate]) -> DestinationSearchResponse:
+def build_destination_confirmation(
+    destinations: list[DestinationCandidate],
+) -> DestinationSearchResponse:
     total_count = len(destinations)
 
     if total_count == 0:
         return DestinationSearchResponse(
             total_count=0,
             search_type=DestinationSearchType.NOT_FOUND,
-            message=("검색된 장소가 없습니다. 정확한 장소명을 다시 한 번 말씀해주세요."),
+            message=(
+                "검색된 장소가 없습니다. 정확한 장소명을 다시 한 번 말씀해주세요."
+            ),
             destinations=[],
         )
 
@@ -54,11 +57,16 @@ def build_destination_confirmation(destinations: list[DestinationCandidate]) -> 
     return DestinationSearchResponse(
         total_count=total_count,
         search_type=DestinationSearchType.MULTIPLE,
-        message=("검색된 장소가 여러 개 있습니다. 주소를 확인하고 이동할 장소를 선택해주세요."),
+        message=(
+            "검색된 장소가 여러 개 있습니다. 주소를 확인하고 이동할 장소를 선택해주세요."
+        ),
         destinations=destinations,
     )
 
-def confirm_destination(request: DestinationConfirmationRequest) -> DestinationConfirmationResponse:
+
+def confirm_destination(
+    request: DestinationConfirmationRequest,
+) -> DestinationConfirmationResponse:
     if not request.confirmed:
         return DestinationConfirmationResponse(
             status=DestinationConfirmationStatus.CANCELLED,

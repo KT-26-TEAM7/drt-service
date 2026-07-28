@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from app.api.destinations import router as destinations_router
 from app.api.dropoff_stops import router as dropoff_stops_router
 
-
 app = FastAPI(
     title="DRT Route Assistant API",
     description="DRT 경로 안내 서비스 백엔드 API",

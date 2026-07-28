@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query
 
 from app.clients.tmap import TMapAPIError
 from app.schemas.destination import (
@@ -15,7 +15,6 @@ from app.services.search_destinations import (
     search_destinations,
 )
 
-
 router = APIRouter(
     prefix="/api/destinations",
     tags=["Destinations"],
@@ -27,7 +26,9 @@ router = APIRouter(
     response_model=DestinationSearchResponse,
     summary="목적지 후보 검색",
 )
-async def search_destination_candidates(keyword: str = Query(..., min_length=1, max_length=100)) -> DestinationSearchResponse:
+async def search_destination_candidates(
+    keyword: str = Query(..., min_length=1, max_length=100),
+) -> DestinationSearchResponse:
     keyword = keyword.strip()
 
     if not keyword:
@@ -44,12 +45,15 @@ async def search_destination_candidates(keyword: str = Query(..., min_length=1, 
             detail=str(error),
         ) from error
 
+
 @router.post(
     "/confirm",
     response_model=DestinationConfirmationResponse,
     summary="목적지 후보 확인",
 )
-async def confirm_destination_candidate(request: DestinationConfirmationRequest) -> DestinationConfirmationResponse:
+async def confirm_destination_candidate(
+    request: DestinationConfirmationRequest,
+) -> DestinationConfirmationResponse:
     try:
         return confirm_destination(request)
 
@@ -57,4 +61,4 @@ async def confirm_destination_candidate(request: DestinationConfirmationRequest)
         raise HTTPException(
             status_code=400,
             detail=str(error),
-        ) from error    
+        ) from error

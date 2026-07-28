@@ -4,7 +4,6 @@ from app.config import NEARBY_STOP_CANDIDATE_COUNT
 from app.repositories.stop_repository import CsvStopRepository
 from app.schemas.stop import DRTStop, NearbyStopCandidate
 
-
 EARTH_RADIUS_METERS = 6_371_000
 
 
@@ -17,12 +16,8 @@ def _calculate_straight_distance(
     start_latitude_rad = radians(start_latitude)
     end_latitude_rad = radians(end_latitude)
 
-    latitude_difference = radians(
-        end_latitude - start_latitude
-    )
-    longitude_difference = radians(
-        end_longitude - start_longitude
-    )
+    latitude_difference = radians(end_latitude - start_latitude)
+    longitude_difference = radians(end_longitude - start_longitude)
 
     haversine_value = (
         sin(latitude_difference / 2) ** 2
@@ -62,9 +57,7 @@ def find_nearby_stops(
             )
         )
 
-    candidates.sort(
-        key=lambda candidate: candidate.straight_distance_m
-    )
+    candidates.sort(key=lambda candidate: candidate.straight_distance_m)
 
     return candidates[:limit]
 

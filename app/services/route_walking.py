@@ -14,7 +14,9 @@ def _extract_walking_summary(data: dict[str, Any]) -> tuple[int, int]:
     features = data.get("features")
 
     if not isinstance(features, list):
-        raise WalkingRouteError("TMAP 보행자 경로 응답의 features 형식이 올바르지 않습니다.")
+        raise WalkingRouteError(
+            "TMAP 보행자 경로 응답의 features 형식이 올바르지 않습니다."
+        )
 
     for feature in features:
         if not isinstance(feature, dict):
@@ -34,9 +36,13 @@ def _extract_walking_summary(data: dict[str, Any]) -> tuple[int, int]:
         try:
             return int(total_distance), int(total_time)
         except (TypeError, ValueError) as error:
-            raise WalkingRouteError("TMAP 보행자 경로의 거리 또는 시간 값이 올바르지 않습니다.") from error
+            raise WalkingRouteError(
+                "TMAP 보행자 경로의 거리 또는 시간 값이 올바르지 않습니다."
+            ) from error
 
-    raise WalkingRouteError("TMAP 보행자 경로 응답에서 전체 거리와 시간을 찾을 수 없습니다.")
+    raise WalkingRouteError(
+        "TMAP 보행자 경로 응답에서 전체 거리와 시간을 찾을 수 없습니다."
+    )
 
 
 async def calculate_walking_route(
@@ -66,7 +72,7 @@ async def calculate_walking_route(
         json=request_body,
     )
 
-    walking_distance, walking_time = (_extract_walking_summary(data))
+    walking_distance, walking_time = _extract_walking_summary(data)
 
     return StopWalkingRoute(
         stop=stop,
@@ -74,6 +80,7 @@ async def calculate_walking_route(
         walking_distance_m=walking_distance,
         walking_time_seconds=walking_time,
     )
+
 
 async def calculate_walking_routes(
     candidates: list[NearbyStopCandidate],

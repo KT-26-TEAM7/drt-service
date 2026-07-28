@@ -4,6 +4,7 @@ from app.clients.tmap import TMapClient
 from app.schemas.destination import DestinationCandidate, DestinationSearchResponse
 from app.services.confirm_destination import build_destination_confirmation
 
+
 class DestinationSearchError(RuntimeError):
     """목적지 검색 응답 처리 중 발생한 오류."""
 
@@ -56,9 +57,7 @@ def _extract_road_address(raw_destination: dict[str, Any]) -> str | None:
         if not isinstance(new_address, dict):
             continue
 
-        full_address = _normalize_text(
-            new_address.get("fullAddressRoad")
-        )
+        full_address = _normalize_text(new_address.get("fullAddressRoad"))
 
         if full_address:
             return full_address
@@ -73,18 +72,10 @@ def _extract_lot_address(raw_destination: dict[str, Any]) -> str | None:
         _normalize_text(raw_destination.get("lowerAddrName")),
     ]
 
-    address_parts = [
-        part
-        for part in address_parts
-        if part
-    ]
+    address_parts = [part for part in address_parts if part]
 
-    first_number = _normalize_text(
-        raw_destination.get("firstNo")
-    )
-    second_number = _normalize_text(
-        raw_destination.get("secondNo")
-    )
+    first_number = _normalize_text(raw_destination.get("firstNo"))
+    second_number = _normalize_text(raw_destination.get("secondNo"))
 
     if first_number:
         lot_number = first_number
@@ -94,9 +85,7 @@ def _extract_lot_address(raw_destination: dict[str, Any]) -> str | None:
 
         address_parts.append(lot_number)
 
-    detail_address = _normalize_text(
-        raw_destination.get("detailAddrName")
-    )
+    detail_address = _normalize_text(raw_destination.get("detailAddrName"))
 
     if detail_address:
         address_parts.append(detail_address)
@@ -114,9 +103,8 @@ def _parse_destination(raw_destination: dict[str, Any]) -> DestinationCandidate 
 
     latitude, longitude = coordinates
 
-    address = (
-        _extract_road_address(raw_destination)
-        or _extract_lot_address(raw_destination)
+    address = _extract_road_address(raw_destination) or _extract_lot_address(
+        raw_destination
     )
 
     return DestinationCandidate(
@@ -129,11 +117,13 @@ def _parse_destination(raw_destination: dict[str, Any]) -> DestinationCandidate 
         district=_normalize_text(raw_destination.get("middleAddrName")),
         neighborhood=_normalize_text(raw_destination.get("lowerAddrName")),
         category=_normalize_text(raw_destination.get("lowerBizName")),
-        detail_category=_normalize_text(raw_destination.get("detailBizName"))
+        detail_category=_normalize_text(raw_destination.get("detailBizName")),
     )
 
 
-async def search_destinations(keyword: str, client: TMapClient | None = None) -> DestinationSearchResponse:
+async def search_destinations(
+    keyword: str, client: TMapClient | None = None
+) -> DestinationSearchResponse:
     normalized_keyword = keyword.strip()
 
     if not normalized_keyword:

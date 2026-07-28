@@ -1,7 +1,7 @@
 from app.clients.tmap import TMapClient
 from app.repositories.stop_repository import CsvStopRepository
 from app.schemas.destination import DestinationCandidate
-from app.schemas.stop import StopWalkingRoute, DropoffStopSelectionResponse
+from app.schemas.stop import DropoffStopSelectionResponse, StopWalkingRoute
 from app.services.nearby_stops import find_nearby_stops
 from app.services.route_walking import calculate_walking_routes
 
@@ -53,7 +53,6 @@ async def find_optimal_dropoff_stop(
         selected_stop=selected_stop,
         evaluated_stops=walking_routes,
         message=(
-            f"{selected_stop.stop.name} 정류장이 "
-            "목적지까지의 보행시간이 가장 짧습니다."
+            f"{selected_stop.stop.name} 정류장이 목적지까지의 보행시간이 가장 짧습니다."
         ),
     )

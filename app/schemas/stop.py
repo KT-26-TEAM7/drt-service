@@ -1,14 +1,12 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field
 
 from app.schemas.destination import DestinationCandidate
 
 
 class DRTStop(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-
     id: int
     name: str
-    stop_type: str = Field(alias="type")
+    stop_type: str
     ext_id: str | None = None
     latitude: float
     longitude: float
