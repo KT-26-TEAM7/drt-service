@@ -30,3 +30,19 @@ class DestinationSearchResponse(BaseModel):
     search_type: DestinationSearchType
     message: str
     destinations: list[DestinationCandidate]
+
+
+class DestinationConfirmationStatus(str, Enum):
+    CONFIRMED = "confirmed"
+    CANCELLED = "cancelled"
+
+
+class DestinationConfirmationRequest(BaseModel):
+    confirmed: bool
+    destination: DestinationCandidate | None = None
+
+
+class DestinationConfirmationResponse(BaseModel):
+    status: DestinationConfirmationStatus
+    message: str
+    destination: DestinationCandidate | None = None
