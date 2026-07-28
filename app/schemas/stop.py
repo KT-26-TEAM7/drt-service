@@ -10,3 +10,8 @@ class DRTStop(BaseModel):
     ext_id: str | None = None
     latitude: float
     longitude: float
+
+
+class NearbyStopCandidate(BaseModel):
+    stop: DRTStop
+    straight_distance_m: float = Field(ge=0)
