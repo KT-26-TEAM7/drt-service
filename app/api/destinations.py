@@ -1,8 +1,20 @@
 from fastapi import APIRouter, HTTPException, Query, status
 
 from app.clients.tmap import TMapAPIError
-from app.schemas.destination import DestinationSearchResponse
-from app.services.search_destinations import DestinationSearchError, search_destinations 
+from app.schemas.destination import (
+    DestinationConfirmationRequest,
+    DestinationConfirmationResponse,
+    DestinationSearchResponse,
+)
+from app.services.destination_confirmation import (
+    DestinationConfirmationError,
+    confirm_destination,
+)
+from app.services.search_destinations import (
+    DestinationSearchError,
+    search_destinations,
+)
+
 
 router = APIRouter(
     prefix="/api/destinations",
@@ -31,3 +43,18 @@ async def search_destination_candidates(keyword: str = Query(..., min_length=1, 
             status_code=502,
             detail=str(error),
         ) from error
+
+@router.post(
+    "/confirm",
+    response_model=DestinationConfirmationResponse,
+    summary="목적지 후보 확인",
+)
+async def confirm_destination_candidate(request: DestinationConfirmationRequest) -> DestinationConfirmationResponse:
+    try:
+        return confirm_destination(request)
+
+    except DestinationConfirmationError as error:
+        raise HTTPException(
+            status_code=400,
+            detail=str(error),
+        ) from error    
