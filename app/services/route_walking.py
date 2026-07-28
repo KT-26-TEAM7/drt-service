@@ -1,7 +1,7 @@
 from typing import Any
 from urllib.parse import quote
 
-from app.clients.tmap import TMapClient
+from app.clients.tmap import TMapAPIError, TMapClient
 from app.schemas.destination import DestinationCandidate
 from app.schemas.stop import NearbyStopCandidate, StopWalkingRoute
 
@@ -74,3 +74,31 @@ async def calculate_walking_route(
         walking_distance_m=walking_distance,
         walking_time_seconds=walking_time,
     )
+
+async def calculate_walking_routes(
+    candidates: list[NearbyStopCandidate],
+    destination: DestinationCandidate,
+    client: TMapClient | None = None,
+) -> list[StopWalkingRoute]:
+    if not candidates:
+        raise WalkingRouteError("보행경로를 계산할 정류장 후보가 없습니다.")
+
+    tmap_client = client or TMapClient()
+    walking_routes: list[StopWalkingRoute] = []
+
+    for candidate in candidates:
+        try:
+            walking_route = await calculate_walking_route(
+                candidate=candidate,
+                destination=destination,
+                client=tmap_client,
+            )
+        except (TMapAPIError, WalkingRouteError):
+            continue
+
+        walking_routes.append(walking_route)
+
+    if not walking_routes:
+        raise WalkingRouteError("모든 정류장의 보행경로 계산에 실패했습니다.")
+
+    return walking_routes
