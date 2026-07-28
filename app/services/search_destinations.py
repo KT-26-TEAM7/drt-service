@@ -2,7 +2,7 @@ from typing import Any
 
 from app.clients.tmap import TMapClient
 from app.schemas.destination import DestinationCandidate, DestinationSearchResponse
-
+from app.services.destination_confirmation import build_destination_confirmation
 
 class DestinationSearchError(RuntimeError):
     """목적지 검색 응답 처리 중 발생한 오류."""
@@ -195,7 +195,4 @@ async def search_destinations(keyword: str, client: TMapClient | None = None) ->
         seen_ids.add(destination.tmap_id)
         destinations.append(destination)
 
-    return DestinationSearchResponse(
-        total_count=len(destinations),
-        destinations=destinations,
-    )
+    return build_destination_confirmation(destinations)
