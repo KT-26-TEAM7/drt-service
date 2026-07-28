@@ -2,7 +2,7 @@ from typing import Any
 
 from app.clients.tmap import TMapClient
 from app.schemas.destination import DestinationCandidate, DestinationSearchResponse
-from app.services.destination_confirmation import build_destination_confirmation
+from app.services.confirm_destination import build_destination_confirmation
 
 class DestinationSearchError(RuntimeError):
     """목적지 검색 응답 처리 중 발생한 오류."""

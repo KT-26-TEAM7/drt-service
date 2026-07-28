@@ -6,7 +6,7 @@ from app.schemas.destination import (
     DestinationConfirmationResponse,
     DestinationSearchResponse,
 )
-from app.services.destination_confirmation import (
+from app.services.confirm_destination import (
     DestinationConfirmationError,
     confirm_destination,
 )
