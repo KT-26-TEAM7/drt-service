@@ -16,7 +16,7 @@ def _normalize_text(value: Any) -> str | None:
     return text or None
 
 
-def _extract_coordinates(raw_destination: dict[str, Any],) -> tuple[float, float] | None:
+def _extract_coordinates(raw_destination: dict[str, Any]) -> tuple[float, float] | None:
     coordinate_pairs = [
         ("pnsLat", "pnsLon"),
         ("frontLat", "frontLon"),
@@ -38,7 +38,7 @@ def _extract_coordinates(raw_destination: dict[str, Any],) -> tuple[float, float
     return None
 
 
-def _extract_road_address(raw_destination: dict[str, Any],) -> str | None:
+def _extract_road_address(raw_destination: dict[str, Any]) -> str | None:
     new_address_list = raw_destination.get("newAddressList") or {}
 
     if not isinstance(new_address_list, dict):
@@ -74,7 +74,9 @@ def _extract_lot_address(raw_destination: dict[str, Any]) -> str | None:
     ]
 
     address_parts = [
-        part for part in address_parts if part
+        part
+        for part in address_parts
+        if part
     ]
 
     first_number = _normalize_text(
@@ -124,18 +126,10 @@ def _parse_destination(raw_destination: dict[str, Any]) -> DestinationCandidate 
         latitude=latitude,
         longitude=longitude,
         address=address,
-        district=_normalize_text(
-            raw_destination.get("middleAddrName")
-        ),
-        neighborhood=_normalize_text(
-            raw_destination.get("lowerAddrName")
-        ),
-        category=_normalize_text(
-            raw_destination.get("lowerBizName")
-        ),
-        detail_category=_normalize_text(
-            raw_destination.get("detailBizName")
-        ),
+        district=_normalize_text(raw_destination.get("middleAddrName")),
+        neighborhood=_normalize_text(raw_destination.get("lowerAddrName")),
+        category=_normalize_text(raw_destination.get("lowerBizName")),
+        detail_category=_normalize_text(raw_destination.get("detailBizName"))
     )
 
 
@@ -168,16 +162,12 @@ async def search_destinations(keyword: str, client: TMapClient | None = None) ->
     search_info = data.get("searchPoiInfo")
 
     if not isinstance(search_info, dict):
-        raise DestinationSearchError(
-            "TMAP 응답에 searchPoiInfo가 없습니다."
-        )
+        raise DestinationSearchError("TMAP 응답에 searchPoiInfo가 없습니다.")
 
     pois_container = search_info.get("pois") or {}
 
     if not isinstance(pois_container, dict):
-        raise DestinationSearchError(
-            "TMAP 응답의 pois 형식이 올바르지 않습니다."
-        )
+        raise DestinationSearchError("TMAP 응답의 pois 형식이 올바르지 않습니다.")
 
     raw_destinations = pois_container.get("poi") or []
 
@@ -185,9 +175,7 @@ async def search_destinations(keyword: str, client: TMapClient | None = None) ->
         raw_destinations = [raw_destinations]
 
     if not isinstance(raw_destinations, list):
-        raise DestinationSearchError(
-            "TMAP 응답의 poi 형식이 올바르지 않습니다."
-        )
+        raise DestinationSearchError("TMAP 응답의 poi 형식이 올바르지 않습니다.")
 
     destinations: list[DestinationCandidate] = []
     seen_ids: set[str] = set()
@@ -207,10 +195,7 @@ async def search_destinations(keyword: str, client: TMapClient | None = None) ->
         seen_ids.add(destination.tmap_id)
         destinations.append(destination)
 
-    total_count = len(destinations)
-
     return DestinationSearchResponse(
-        total_count=total_count,
-        requires_confirmation=total_count > 1,
+        total_count=len(destinations),
         destinations=destinations,
     )

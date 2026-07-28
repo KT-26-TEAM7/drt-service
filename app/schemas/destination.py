@@ -19,5 +19,4 @@ class DestinationCandidate(BaseModel):
 
 class DestinationSearchResponse(BaseModel):
     total_count: int = Field(ge=0)
-    requires_confirmation: bool
     destinations: list[DestinationCandidate]
