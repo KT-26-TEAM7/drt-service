@@ -15,3 +15,10 @@ class DRTStop(BaseModel):
 class NearbyStopCandidate(BaseModel):
     stop: DRTStop
     straight_distance_m: float = Field(ge=0)
+
+
+class StopWalkingRoute(BaseModel):
+    stop: DRTStop
+    straight_distance_m: float = Field(ge=0)
+    walking_distance_m: int = Field(ge=0)
+    walking_time_seconds: int = Field(ge=0)
