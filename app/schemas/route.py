@@ -23,7 +23,7 @@ class DestinationRouteEvaluation(BaseModel):
     total_time_seconds: int = Field(ge=0)
 
 
-class DestinationRecommendationResponse(BaseModel):
+class CategoryDestinationSelectionResponse(BaseModel):
     selected: DestinationRouteEvaluation
     evaluated_destinations: list[DestinationRouteEvaluation]
     message: str
