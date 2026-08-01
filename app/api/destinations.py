@@ -1,16 +1,19 @@
+from typing import Annotated
+
 from fastapi import APIRouter, HTTPException, Query
 
 from app.clients.tmap import TMapAPIError
 from app.schemas.destination import (
     DestinationConfirmationRequest,
     DestinationConfirmationResponse,
+    DestinationKeywordType,
     DestinationSearchResponse,
 )
-from app.services.confirm_destination import (
+from app.services.destination_confirmation import (
     DestinationConfirmationError,
     confirm_destination,
 )
-from app.services.search_destinations import (
+from app.services.destination_search import (
     DestinationSearchError,
     search_destinations,
 )
@@ -27,7 +30,13 @@ router = APIRouter(
     summary="목적지 후보 검색",
 )
 async def search_destination_candidates(
-    keyword: str = Query(..., min_length=1, max_length=100),
+    keyword: Annotated[str, Query(min_length=1, max_length=100)],
+    departure_latitude: Annotated[float, Query(ge=-90, le=90)],
+    departure_longitude: Annotated[float, Query(ge=-180, le=180)],
+    keyword_type: Annotated[
+        DestinationKeywordType,
+        Query(description="exact: 정확한 목적지명, category: 대분류"),
+    ] = DestinationKeywordType.EXACT,
 ) -> DestinationSearchResponse:
     keyword = keyword.strip()
 
@@ -38,7 +47,12 @@ async def search_destination_candidates(
         )
 
     try:
-        return await search_destinations(keyword)
+        return await search_destinations(
+            keyword=keyword,
+            departure_latitude=departure_latitude,
+            departure_longitude=departure_longitude,
+            keyword_type=keyword_type,
+        )
     except (TMapAPIError, DestinationSearchError) as error:
         raise HTTPException(
             status_code=502,

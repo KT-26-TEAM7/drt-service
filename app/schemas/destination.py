@@ -19,6 +19,11 @@ class DestinationCandidate(BaseModel):
     detail_category: str | None = None
 
 
+class DestinationKeywordType(str, Enum):
+    EXACT = "exact"
+    CATEGORY = "category"
+
+
 class DestinationSearchType(str, Enum):
     NOT_FOUND = "not_found"
     SINGLE = "single"

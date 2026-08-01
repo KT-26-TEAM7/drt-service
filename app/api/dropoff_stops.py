@@ -3,11 +3,11 @@ from fastapi import APIRouter, HTTPException, status
 from app.clients.tmap import TMapAPIError
 from app.repositories.stop_repository import StopRepositoryError
 from app.schemas.stop import DropoffStopSelectionRequest, DropoffStopSelectionResponse
-from app.services.route_walking import WalkingRouteError
-from app.services.select_dropoff_stop import (
+from app.services.dropoff_stop_selection import (
     DropoffStopSelectionError,
     find_optimal_dropoff_stop,
 )
+from app.services.dropoff_walking_routes import WalkingRouteError
 
 router = APIRouter(
     prefix="/api/dropoff-stops",
