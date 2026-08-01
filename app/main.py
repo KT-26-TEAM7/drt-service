@@ -1,10 +1,16 @@
 from fastapi import FastAPI
 
+from app.api.destinations import router as destinations_router
+
+
 app = FastAPI(
     title="DRT Route Assistant API",
     description="DRT 경로 안내 서비스 백엔드 API",
     version="0.1.0",
 )
+
+
+app.include_router(destinations_router)
 
 
 @app.get("/", tags=["System"])
