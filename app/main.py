@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.api.destinations import router as destinations_router
+from app.api.dropoff_stops import router as dropoff_stops_router
 
 
 app = FastAPI(
@@ -11,6 +12,7 @@ app = FastAPI(
 
 
 app.include_router(destinations_router)
+app.include_router(dropoff_stops_router)
 
 
 @app.get("/", tags=["System"])
