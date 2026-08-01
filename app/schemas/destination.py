@@ -2,14 +2,13 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
+from app.schemas.location import Coordinate
 
-class DestinationCandidate(BaseModel):
+
+class DestinationCandidate(Coordinate):
     tmap_id: str
     name: str
     phone: str | None = None
-
-    latitude: float
-    longitude: float
 
     address: str | None = None
     district: str | None = None

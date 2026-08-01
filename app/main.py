@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 
-from app.api.destinations import router as destinations_router
+from app.api.boarding_stops import router as boarding_stops_router
 from app.api.dropoff_stops import router as dropoff_stops_router
+from app.api.exact_destinations import router as destinations_router
 
 app = FastAPI(
     title="DRT Route Assistant API",
@@ -11,6 +12,7 @@ app = FastAPI(
 
 
 app.include_router(destinations_router)
+app.include_router(boarding_stops_router)
 app.include_router(dropoff_stops_router)
 
 

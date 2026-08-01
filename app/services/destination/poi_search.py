@@ -4,13 +4,19 @@ import math
 from typing import Any
 
 from app.clients.tmap import TMapClient
+from app.config import (
+    POI_CANDIDATE_COUNT,
+    POI_FETCH_COUNT,
+    POI_INITIAL_RADIUS_KM,
+    POI_MAX_INITIAL_RADIUS_KM,
+    POI_MAX_RADIUS_KM,
+    POI_RADIUS_EXPAND_FACTOR,
+)
 from app.schemas.destination import (
     DestinationCandidate,
     DestinationKeywordType,
-    DestinationSearchResponse,
 )
-from app.services.destination_confirmation import build_destination_confirmation
-from app.services.geo_distance import calculate_haversine_distance_m
+from app.services.route.geo import calculate_haversine_distance_m
 
 
 class DestinationSearchError(RuntimeError):
@@ -206,25 +212,27 @@ def _deduplicate_destinations(
     return unique_destinations
 
 
-async def search_destinations(
+async def search_destination_candidates(
     keyword: str,
     departure_latitude: float,
     departure_longitude: float,
     keyword_type: DestinationKeywordType = DestinationKeywordType.EXACT,
     *,
-    initial_radius_km: int = 3,
-    candidate_count: int = 3,
-    radius_expand_factor: float = 2.0,
-    poi_fetch_count: int = 30,
+    initial_radius_km: int = POI_INITIAL_RADIUS_KM,
+    candidate_count: int = POI_CANDIDATE_COUNT,
+    radius_expand_factor: float = POI_RADIUS_EXPAND_FACTOR,
+    poi_fetch_count: int = POI_FETCH_COUNT,
     client: TMapClient | None = None,
-) -> DestinationSearchResponse:
+) -> list[DestinationCandidate]:
     normalized_keyword = keyword.strip()
 
     if not normalized_keyword:
         raise ValueError("검색어를 입력해주세요.")
 
-    if not 1 <= initial_radius_km <= 3:
-        raise ValueError("initial_radius_km은 1~3여야 합니다.")
+    if not 1 <= initial_radius_km <= POI_MAX_INITIAL_RADIUS_KM:
+        raise ValueError(
+            f"initial_radius_km은 1~{POI_MAX_INITIAL_RADIUS_KM}여야 합니다."
+        )
 
     if candidate_count <= 0 or poi_fetch_count <= 0:
         raise ValueError("검색 개수는 1 이상이어야 합니다.")
@@ -246,7 +254,7 @@ async def search_destinations(
 
     if len(destinations) < candidate_count:
         expanded_radius_km = min(
-            33,
+            POI_MAX_RADIUS_KM,
             max(
                 initial_radius_km + 1,
                 math.ceil(initial_radius_km * radius_expand_factor),
@@ -277,4 +285,4 @@ async def search_destinations(
             )
         )
 
-    return build_destination_confirmation(destinations[:candidate_count])
+    return destinations[:candidate_count]

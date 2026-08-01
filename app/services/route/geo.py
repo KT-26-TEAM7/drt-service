@@ -1,4 +1,4 @@
-"""좌표 사이의 지리적 거리를 계산하는 도메인 공통 함수."""
+"""좌표 사이의 지리적 거리를 계산한다."""
 
 from math import atan2, cos, radians, sin, sqrt
 
