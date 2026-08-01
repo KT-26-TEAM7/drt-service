@@ -7,7 +7,7 @@ from app.schemas.stop import DRTStop, NearbyStopCandidate
 EARTH_RADIUS_METERS = 6_371_000
 
 
-def _calculate_straight_distance(
+def calculate_haversine_distance_m(
     start_latitude: float,
     start_longitude: float,
     end_latitude: float,
@@ -26,6 +26,8 @@ def _calculate_straight_distance(
         * sin(longitude_difference / 2) ** 2
     )
 
+    haversine_value = min(1.0, max(0.0, haversine_value))
+
     central_angle = 2 * atan2(
         sqrt(haversine_value),
         sqrt(1 - haversine_value),
@@ -43,7 +45,7 @@ def find_nearby_stops(
     candidates = []
 
     for stop in stops:
-        distance = _calculate_straight_distance(
+        distance = calculate_haversine_distance_m(
             start_latitude=destination_latitude,
             start_longitude=destination_longitude,
             end_latitude=stop.latitude,
