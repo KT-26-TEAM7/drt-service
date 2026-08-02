@@ -1,8 +1,13 @@
 """기준 위치와 보행시간이 가장 짧은 정류장을 공통 방식으로 선정한다."""
 
 from enum import Enum
+from math import ceil
 
 from app.clients.tmap import TMapAPIError, TMapClient
+from app.config import (
+    NEARBY_STOP_FALLBACK_DISTANCE_M,
+    WALKING_SPEED_M_PER_SECOND,
+)
 from app.schemas.location import Coordinate
 from app.schemas.stop import DRTStop, StopSelectionResult, StopWalkingRoute
 from app.services.route.walking import WalkingRouteError, calculate_walking_route
@@ -60,6 +65,20 @@ async def select_optimal_stop(
             )
         except (TMapAPIError, WalkingRouteError) as error:
             last_error = error
+            # 출발지와 도착지가 너무 가까우면 TMAP 보행경로 요청이 실패할 수 있으므로
+            # 직선거리 기반 대체 경로를 사용해 해당 정류장이 평가에서 누락되지 않게 한다.
+            if candidate.straight_distance_m <= NEARBY_STOP_FALLBACK_DISTANCE_M:
+                fallback_distance_m = ceil(candidate.straight_distance_m)
+                walking_routes.append(
+                    StopWalkingRoute(
+                        stop=stop,
+                        straight_distance_m=candidate.straight_distance_m,
+                        walking_distance_m=fallback_distance_m,
+                        walking_time_seconds=ceil(
+                            fallback_distance_m / WALKING_SPEED_M_PER_SECOND
+                        ),
+                    )
+                )
             continue
 
         walking_routes.append(
